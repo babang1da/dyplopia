@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation of Ghosting Text</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000000;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .ghosting-text {
+            position: relative;
+            font-size: 48px;
+            font-weight: bold;
+            line-height: 1.2;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .ghosting-text span {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            content: attr(data-text);
+            color: rgba(0, 255, 255, 0.3); /* Cyan with transparency to reduce ghosting */
+            transform: translateY(3px);
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .controls input {
+            width: 200px;
+        }
+
+        .controls button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="ghosting-text" data-text="DIPLOPIA">
+        DIPLOPIA
+        <span>DIPLOPIA</span>
+    </div>
+
+    <div class="controls">
+        <label>
+            Ghost Offset: <span id="offsetValue">3</span>
+            <input type="range" id="offset" min="0" max="20" value="3">
+        </label>
+
+        <label>
+            Ghost Color:
+            <input type="color" id="ghostColor" value="#00ffff">
+        </label>
+
+        <label>
+            Ghost Opacity: <span id="opacityValue">0.3</span>
+            <input type="range" id="opacity" min="0" max="1" step="0.1" value="0.3">
+        </label>
+    </div>
+
+    <script>
+        const ghostElement = document.querySelector('.ghosting-text span');
+        const offsetInput = document.getElementById('offset');
+        const ghostColorInput = document.getElementById('ghostColor');
+        const opacityInput = document.getElementById('opacity');
+        const offsetValueDisplay = document.getElementById('offsetValue');
+        const opacityValueDisplay = document.getElementById('opacityValue');
+
+        function updateGhostStyle() {
+            const offset = offsetInput.value;
+            const color = ghostColorInput.value;
+            const opacity = opacityInput.value;
+
+            ghostElement.style.transform = `translateY(${offset}px)`;
+            ghostElement.style.color = hexToRgba(color, opacity);
+            offsetValueDisplay.textContent = offset;
+            opacityValueDisplay.textContent = opacity;
+        }
+
+        function hexToRgba(hex, opacity) {
+            const bigint = parseInt(hex.slice(1), 16);
+            const r = (bigint >> 16) & 255;
+            const g = (bigint >> 8) & 255;
+            const b = bigint & 255;
+            return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        }
+
+        offsetInput.addEventListener('input', updateGhostStyle);
+        ghostColorInput.addEventListener('input', updateGhostStyle);
+        opacityInput.addEventListener('input', updateGhostStyle);
+
+        updateGhostStyle();
+    </script>
+</body>
+</html>
